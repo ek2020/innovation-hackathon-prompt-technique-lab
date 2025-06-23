@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Billing Support Prompt Comparison</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .scenario {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+        }
+        .prompt-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .prompt-box {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: white;
+        }
+        .response-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .response-box {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: white;
+        }
+        .query {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .prompt {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        .response {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+        .analysis {
+            background-color: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 8px 8px 0 0;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            animation: fadeEffect 1s;
+        }
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        .interactive-container {
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .query-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .query-input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+        }
+        .submit-button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submit-button:hover {
+            background-color: #2980b9;
+        }
+        .submit-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-message {
+            color: #e74c3c;
+            padding: 10px;
+            background-color: #fadbd8;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .live-response {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+        .analysis-section {
+            background-color: #f0f7ff;
+            border-left: 3px solid #0056b3;
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Billing Support Prompt Comparison</h1>
+    
+    <div class="tab-container">
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'Prompts')">Prompts</button>
+            <button class="tablinks" onclick="openTab(event, 'Scenario1')">Refund Eligibility</button>
+            <button class="tablinks" onclick="openTab(event, 'Scenario2')">Unexpected Charges</button>
+            <button class="tablinks" onclick="openTab(event, 'Scenario3')">Late Payment Fees</button>
+            <button class="tablinks" onclick="openTab(event, 'Interactive')">Interactive Demo</button>
+            <button class="tablinks" onclick="openTab(event, 'Analysis')">Comparative Analysis</button>
+        </div>
+
+        <div id="Prompts" class="tabcontent" style="display: block;">
+            <h2>Prompt Comparison</h2>
+            
+            <h3>Original Basic Prompt</h3>
+            <div class="prompt">You are a helpful assistant. Answer the user's question about their billing issue.</div>
+            
+            <h3>Refined Prompt (Using CLEAR Framework)</h3>
+            <div class="prompt">You are BillingAssist, a specialized customer support AI for [SaaS Product Name]. Your role is to provide accurate, helpful information about billing issues while maintaining a professional, empathetic tone.
+
+CONTEXT:
+- You have knowledge of our subscription plans: Basic ($10/month), Pro ($30/month), and Enterprise ($100/month)
+- Billing occurs monthly or annually (with 20% discount)
+- Payment methods include credit cards and PayPal
+- Common issues include failed payments, upgrade/downgrade questions, refund requests, and invoice inquiries
+
+CONSTRAINTS:
+- Do not provide specific account details you don't have access to
+- Never ask for full credit card information
+- Don't make promises about exceptions to official policies
+- If you cannot resolve an issue, direct customers to email billing@company.com
+
+RESPONSE STRUCTURE:
+1. Acknowledge the customer's issue
+2. Provide relevant information about their billing question
+3. Explain applicable policies clearly
+4. Offer concrete next steps or solutions
+5. Ask if they need further clarification
+
+When discussing refunds, reference our 14-day refund policy. For payment failures, suggest checking payment details and explain our 3-attempt retry process. For plan changes, explain prorated billing.
+
+Always verify you've addressed the core issue before ending your response.</div>
+            
+            <h3>Chain-of-Thought Enhanced Prompt</h3>
+            <div class="prompt">You are BillingAssist, a specialized customer support AI for [SaaS Product Name]. Your role is to provide accurate, helpful information about billing issues while maintaining a professional, empathetic tone.
+
+CONTEXT:
+- You have knowledge of our subscription plans: Basic ($10/month), Pro ($30/month), and Enterprise ($100/month)
+- Billing occurs monthly or annually (with 20% discount)
+- Payment methods include credit cards and PayPal
+- Common issues include failed payments, upgrade/downgrade questions, refund requests, and invoice inquiries
+
+CONSTRAINTS:
+- Do not provide specific account details you don't have access to
+- Never ask for full credit card information
+- Don't make promises about exceptions to official policies
+- If you cannot resolve an issue, direct customers to email billing@company.com
+
+REASONING PROCESS:
+For each customer query, follow this step-by-step reasoning process:
+1. Identify the specific billing issue category (payment failure, refund, plan change, etc.)
+2. Determine what policy information is relevant to this issue
+3. Consider what additional information might be needed from the customer
+4. Calculate any relevant figures (prorations, refund amounts, etc.) showing your work
+5. Evaluate possible solutions based on company policies
+6. Select the most appropriate solution or explanation
+
+RESPONSE STRUCTURE:
+1. Acknowledge the customer's issue
+2. Show your reasoning process clearly labeled as "My Analysis:"
+3. Provide relevant information about their billing question
+4. Explain applicable policies clearly
+5. Offer concrete next steps or solutions
+6. Ask if they need further clarification
+
+For refund calculations, show the original charge amount, applicable refund percentage, and final refund amount. For proration calculations, show the remaining days in billing period, daily rate, and resulting credit/charge.
+
+Always verify you've addressed the core issue before ending your response.</div>
+        </div>
+
+        <div id="Scenario1" class="tabcontent">
+            <h2>Scenario 1: Refund Eligibility</h2>
+            
+            <div class="query">
+                <strong>Customer Query:</strong> "I subscribed to your service 20 days ago but it's not what I expected. Can I get a refund?"
+            </div>
+            
+            <div class="response-container">
+                <div class="response-box">
+                    <h3>Response with Refined Prompt</h3>
+                    <div class="response">I understand you're inquiring about a refund for your subscription that you've had for 20 days.
+
+According to our refund policy, we offer full refunds within 14 days of the initial subscription or renewal. Since your subscription was purchased 20 days ago, it falls outside our standard refund window.
+
+However, if you're experiencing issues with the service or have exceptional circumstances, you can email our billing team at billing@company.com with your account details and reason for the refund request. While we can't guarantee exceptions to the policy, our team reviews each case individually.
+
+Is there anything specific about the service that isn't meeting your needs? I might be able to suggest alternatives or help troubleshoot any issues you're experiencing.</div>
+                </div>
+                
+                <div class="response-box">
+                    <h3>Response with CoT-Enhanced Prompt</h3>
+                    <div class="response">I understand you're inquiring about a refund for your subscription that you've had for 20 days.
+
+My Analysis:
+1. Issue Category: Refund request
+2. Relevant Policy: Our standard refund policy allows refunds within 14 days of purchase
+3. Additional Information: The subscription was purchased 20 days ago
+4. Calculations: 20 days > 14-day refund window
+5. Possible Solutions:
+   - Standard policy: No refund available after 14 days
+   - Exception process: Customer can email billing team for case review
+   - Alternative: Offer troubleshooting or plan adjustment instead
+6. Recommendation: Explain policy, offer exception request path, and explore alternatives
+
+Based on my analysis, your subscription falls outside our standard 14-day refund window. The subscription was purchased 20 days ago, which exceeds our refund eligibility period by 6 days.
+
+Our refund policy is designed to give customers sufficient time to evaluate our service while maintaining business sustainability. While automatic refunds are only available within the first 14 days, our billing team can review special circumstances on a case-by-case basis.
+
+If you'd like to request an exception, please email billing@company.com with your account details and the specific reason for your refund request. Alternatively, I can help address any issues you're experiencing with the service or discuss options like downgrading to a more suitable plan.
+
+Would you like to share what prompted your refund request? This might help me find a better solution for your situation.</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="Scenario2" class="tabcontent">
+            <h2>Scenario 2: Unexpected Charges</h2>
+            
+            <div class="query">
+                <strong>Customer Query:</strong> "I just got charged $45 but my plan is only supposed to be $30 per month. What's going on?"
+            </div>
+            
+            <div class="response-container">
+                <div class="response-box">
+                    <h3>Response with Refined Prompt</h3>
+                    <div class="response">I understand your concern about seeing a charge that's higher than your usual monthly fee.
+
+This could be due to several reasons: a recent plan upgrade, additional user seats added to your account, or perhaps a transition from monthly to a partial period if your billing date changed.
+
+To help you better, could you confirm which plan you're currently on and if you've made any recent changes to your subscription? Also, checking your latest invoice would help identify the specific breakdown of charges.
+
+If you'd like to review your billing history and detailed invoices, you can access them in your account dashboard under "Billing History." If the charge still seems incorrect after reviewing, please contact our billing team at billing@company.com with your invoice number, and they'll investigate further.
+
+Is there anything else about this charge you'd like me to explain?</div>
+                </div>
+                
+                <div class="response-box">
+                    <h3>Response with CoT-Enhanced Prompt</h3>
+                    <div class="response">I understand your concern about seeing a charge that's higher than your usual monthly fee.
+
+My Analysis:
+1. Issue Category: Unexpected or increased charge
+2. Relevant Policy: Billing amounts change based on plan changes, user additions, or billing cycle adjustments
+3. Additional Information Needed: Current plan, recent account changes, specific amount charged vs. expected
+4. Calculations: $45 charged vs. $30 expected = $15 difference
+5. Possible Explanations:
+   - Pro plan ($30/month) + additional user ($15/user/month) = $45
+   - Plan upgrade mid-cycle with proration
+   - Taxes or regulatory fees added to base subscription
+   - One-time fee for additional services
+6. Recommendation: Explain possible reasons, guide to invoice review, offer specific investigation
+
+Based on my analysis, there are several potential explanations for the $15 difference between your expected $30 charge and the actual $45 charge.
+
+The most common explanation would be an additional user seat at $15/month added to your Pro plan ($30/month). Another possibility is proration if you recently upgraded your plan mid-billing cycle.
+
+To identify the exact reason:
+1. Check your latest invoice in your account dashboard under "Billing History"
+2. Look for line items showing plan changes, user additions, or proration calculations
+3. Compare the invoice date with any recent account changes you've made
+
+If after reviewing your invoice the charge still seems incorrect, please contact our billing team at billing@company.com with your invoice number and they'll investigate further.
+
+Would you like me to explain how proration calculations work in more detail, or is there a specific aspect of the charge you're concerned about?</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="Scenario3" class="tabcontent">
+            <h2>Scenario 3: Late Payment Fees</h2>
+            
+            <div class="query">
+                <strong>Customer Query:</strong> "I was charged a late fee but I never received any payment reminder. Can you remove this fee?"
+            </div>
+            
+            <div class="response-container">
+                <div class="response-box">
+                    <h3>Response with Refined Prompt</h3>
+                    <div class="response">I understand your concern about being charged a late fee without receiving a payment reminder.
+
+Our system automatically sends payment reminders 3 days before the due date to the email address associated with your account. It's possible these emails were filtered to spam or sent to an outdated email address.
+
+Regarding the late fee, our policy applies a 5% late fee when payments are more than 7 days overdue. While I don't have the ability to remove fees directly, our billing team can review your specific situation.
+
+To request a review of the late fee, please email billing@company.com with your account information and mention that you didn't receive payment reminders. They can check the email delivery logs and consider waiving the fee as a one-time courtesy if appropriate.
+
+In the meantime, you might want to check your notification settings in your account dashboard and ensure your contact information is up to date to prevent similar issues in the future.
+
+Is there anything else I can help you with regarding this issue?</div>
+                </div>
+                
+                <div class="response-box">
+                    <h3>Response with CoT-Enhanced Prompt</h3>
+                    <div class="response">I understand your concern about being charged a late fee without receiving a payment reminder.
+
+My Analysis:
+1. Issue Category: Late payment fee dispute
+2. Relevant Policy: 
+   - 5% late fee applies after 7+ days overdue
+   - System sends automated reminders 3 days before due date
+   - Fee waiver requires billing team review
+3. Additional Information Needed:
+   - Whether email address is current
+   - If other system emails are being received
+   - Exact timeline of payment due date vs. payment date
+4. Calculations: Not applicable without specific fee amount
+5. Possible Solutions:
+   - Verify email delivery system functioning correctly
+   - One-time courtesy waiver if system issue confirmed
+   - Update contact information to prevent future issues
+6. Recommendation: Explain policy, offer escalation path, suggest preventative measures
+
+Based on my analysis, there are several factors to consider regarding your late fee.
+
+Our system is designed to automatically send payment reminders 3 days before the due date to the email address on your account. When a payment is more than 7 days overdue, a 5% late fee is automatically applied according to our terms of service.
+
+However, if you truly didn't receive any reminders, this could indicate:
+- The emails may have been filtered to your spam folder
+- Your email address might need updating in our system
+- There could have been a technical issue with our notification system
+
+While I don't have the ability to remove fees directly, our billing team can investigate whether all reminders were properly sent and consider waiving the fee as a one-time courtesy if a system issue is identified.
+
+To request this review:
+1. Email billing@company.com with your account information
+2. Mention specifically that you didn't receive payment reminders
+3. Include the date the payment was due and when it was made
+
+In the meantime, I recommend checking your notification settings in your account dashboard and verifying your contact information is current.
+
+Would you like me to explain how to update your notification preferences to help prevent this situation in the future?</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="Interactive" class="tabcontent">
+            <h2>Interactive Billing Assistant Demo</h2>
+            
+            <p>Try the billing assistant with your own queries. The system will automatically select the appropriate prompt type based on the complexity of your query.</p>
+            
+            <div class="interactive-container">
+                <form class="query-form" id="queryForm">
+                    <textarea 
+                        class="query-input" 
+                        id="userQuery" 
+                        rows="4" 
+                        placeholder="Type your billing question here..."
+                        required
+                    ></textarea>
+                    
+                    <div class="button-container">
+                        <button 
+                            type="button" 
+                            class="submit-button" 
+                            id="standardButton"
+                            onclick="submitQuery('standard')"
+                        >
+                            Use Standard Prompt
+                        </button>
+                        
+                        <button 
+                            type="button" 
+                            class="submit-button" 
+                            id="cotButton"
+                            onclick="submitQuery('cot')"
+                        >
+                            Use Chain-of-Thought Prompt
+                        </button>
+                        
+                        <button 
+                            type="button" 
+                            class="submit-button" 
+                            id="autoButton"
+                            onclick="submitQuery('auto')"
+                        >
+                            Auto-Select Prompt
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="loadingIndicator" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                </div>
+                
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+                
+                <div id="responseContainer" style="display: none;">
+                    <h3>Response (<span id="promptTypeUsed"></span>)</h3>
+                    <div id="liveResponse" class="live-response"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="Analysis" class="tabcontent">
+            <h2>Comparative Analysis</h2>
+            
+            <table border="1" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>Refined Prompt</th>
+                        <th>CoT-Enhanced Prompt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Accuracy</strong></td>
+                        <td>Good - Provides correct policy information</td>
+                        <td>Excellent - Systematic approach reduces errors</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Completeness</strong></td>
+                        <td>Good - Covers main points</td>
+                        <td>Excellent - Structured analysis ensures comprehensive coverage</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transparency</strong></td>
+                        <td>Limited - Reasoning hidden</td>
+                        <td>Excellent - Explicit reasoning process</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Educational Value</strong></td>
+                        <td>Moderate - Explains policies</td>
+                        <td>High - Shows how conclusions are reached</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trust Building</strong></td>
+                        <td>Moderate</td>
+                        <td>High - Visible reasoning builds confidence</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Personalization</strong></td>
+                        <td>Good - Addresses specific issue</td>
+                        <td>Excellent - Detailed analysis of specific situation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Response Length</strong></td>
+                        <td>Concise</td>
+                        <td>Longer due to reasoning exposition</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Handling Complex Cases</strong></td>
+                        <td>Adequate</td>
+                        <td>Superior - Structured for complex scenarios</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="analysis">
+                <h3>Which Approach Works Best and Why</h3>
+                <p>The <strong>Chain-of-Thought enhanced prompt</strong> demonstrates superior effectiveness for billing support scenarios for several key reasons:</p>
+                
+                <ol>
+                    <li><strong>Transparency in Problem-Solving</strong>: By revealing the assistant's reasoning process, the CoT approach builds customer trust and understanding. This is particularly valuable for billing issues where customers may be skeptical or frustrated about charges and policies.</li>
+                    
+                    <li><strong>Accuracy in Complex Scenarios</strong>: The structured reasoning process significantly reduces the risk of logical errors or overlooked factors in complex calculations like prorations or partial refunds. The step-by-step approach ensures all relevant policies and circumstances are considered.</li>
+                    
+                    <li><strong>Educational Value</strong>: The explicit reasoning helps customers understand not just what the policy is, but how it applies to their specific situation. This improves customer knowledge and may reduce future support inquiries about similar issues.</li>
+                    
+                    <li><strong>Completeness</strong>: The systematic analysis framework ensures the assistant considers all relevant policies, possible explanations, and solution paths before responding, leading to more comprehensive answers.</li>
+                    
+                    <li><strong>Personalization</strong>: The analysis framework encourages identifying the specific customer situation rather than providing generic responses, making customers feel their unique circumstances are being considered.</li>
+                </ol>
+                
+                <p>While the refined prompt produces good responses that are more concise, the CoT-enhanced prompt excels in scenarios involving:</p>
+                <ul>
+                    <li>Calculations (prorations, refunds, discounts)</li>
+                    <li>Policy interpretations and eligibility determinations</li>
+                    <li>Multiple factors influencing a decision</li>
+                    <li>Complex troubleshooting sequences</li>
+                </ul>
+                
+                <p>The primary tradeoff is response length - CoT responses are inherently longer due to the inclusion of the reasoning process. However, for billing support where accuracy and clarity are paramount, this tradeoff is generally worthwhile. The explicit reasoning provides value that outweighs the additional length, especially for sensitive financial matters where precision is valued over brevity.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API endpoint
+        const API_URL = 'http://localhost:3000/api/billing-assistant';
+        
+        // Tab functionality
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        
+        // Interactive demo functionality
+        async function submitQuery(promptType) {
+            const userQuery = document.getElementById('userQuery').value.trim();
+            
+            if (!userQuery) {
+                showError('Please enter a query');
+                return;
+            }
+            
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'flex';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('responseContainer').style.display = 'none';
+            
+            // Disable buttons during API call
+            setButtonsDisabled(true);
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: userQuery,
+                        promptType: promptType === 'auto' ? null : promptType
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const data = await response.json();
+                
+                // Display the response
+                document.getElementById('promptTypeUsed').textContent = 
+                    data.promptType === 'cot' ? 'Chain-of-Thought' : 'Standard';
+                
+                const responseElement = document.getElementById('liveResponse');
+                
+                // Format the response with analysis section if present
+                if (data.analysis && data.analysis.steps && data.analysis.steps.length > 0) {
+                    // Split the response at "My Analysis:" if it exists
+                    const parts = data.response.split('My Analysis:');
+                    const beforeAnalysis = parts[0];
+                    
+                    // Create HTML for the response
+                    let html = beforeAnalysis;
+                    
+                    // Add the analysis section with formatting
+                    html += '<div class="analysis-section">';
+                    html += '<h4>My Analysis:</h4>';
+                    html += '<ol>';
+                    data.analysis.steps.forEach(step => {
+                        html += `<li>${step}</li>`;
+                    });
+                    html += '</ol>';
+                    html += '</div>';
+                    
+                    // Add the rest of the response if there's content after the analysis
+                    if (parts.length > 1) {
+                        const afterAnalysisParts = parts[1].split('\n');
+                        // Skip the numbered list that was already formatted
+                        const startIndex = afterAnalysisParts.findIndex(line => !line.match(/^\d+\.\s/));
+                        if (startIndex !== -1) {
+                            html += afterAnalysisParts.slice(startIndex).join('\n');
+                        }
+                    }
+                    
+                    responseElement.innerHTML = html;
+                } else {
+                    // Just display the plain response
+                    responseElement.textContent = data.response;
+                }
+                
+                // Show the response container
+                document.getElementById('responseContainer').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to get response from the server. Please try again.');
+            } finally {
+                // Hide loading indicator and re-enable buttons
+                document.getElementById('loadingIndicator').style.display = 'none';
+                setButtonsDisabled(false);
+            }
+        }
+        
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function setButtonsDisabled(disabled) {
+            document.getElementById('standardButton').disabled = disabled;
+            document.getElementById('cotButton').disabled = disabled;
+            document.getElementById('autoButton').disabled = disabled;
+        }
+    </script>
+</body>
+</html>

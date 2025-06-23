@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  prompt-engineering-demo:
+    build: .
+    ports:
+      - "3000:3000"  # Backend API
+      - "8080:8080"  # Frontend HTTP server
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/.env:/app/backend/.env
